@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'math_practice_screen.dart';
-import 'timed_practice.dart';
-import 'result_analysis.dart';
-import 'import_export_screen.dart';
-import 'error_prone_practice.dart';
+import 'grade_selection_screen.dart';  // 导入主页面
 
 void main() {
   runApp(const MyApp());
@@ -16,42 +12,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: '数学口算练习',
+      title: '数学练习系统',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: GradeSelectionScreen(),  // 初始页面为选择年级页面
+      home: LoginPage(),  // 启动时进入登录页面
     );
   }
 }
 
-class GradeSelectionScreen extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _GradeSelectionScreenState createState() => _GradeSelectionScreenState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _GradeSelectionScreenState extends State<GradeSelectionScreen> {
-  int selectedGrade = 1; // 默认选择1年级
-  List<int> grades = [1, 2, 3, 4, 5, 6];
-  final ErrorPronePractice errorPronePractice = ErrorPronePractice();  // 创建 ErrorPronePractice 实例
-
-  String gradeToChinese(int grade) {
-    const gradeNames = {
-      1: '一年级',
-      2: '二年级',
-      3: '三年级',
-      4: '四年级',
-      5: '五年级',
-      6: '六年级',
-    };
-    return gradeNames[grade] ?? '$grade年级';  // 默认返回原年级
-  }
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("数学口算练习", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text("数学练习系统", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blue,
       ),
       body: Column(
@@ -83,52 +67,69 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        "选择难度",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.purpleAccent),
+                      const Text(
+                        "登录",
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
-                      //下拉框
+
+                      const SizedBox(height: 50),
+
+                      // 用户名输入框
                       Container(
-                        width: 110, // 设置固定宽度，控制下拉框的大小
-                        child: InputDecorator(
+                        width: 200,
+                        child: TextField(
+                          controller: _usernameController,
                           decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.blue[50],
+                            labelText: '用户名',
+                            prefixIcon: Icon(Icons.person),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                            filled: true,
+                            fillColor: Colors.blue[50],
                           ),
-                          child: DropdownButton<int>(
-                            value: selectedGrade,
-                            onChanged: (int? newGrade) {
-                              setState(() {
-                                selectedGrade = newGrade!;  // 更新选择的年级
-                              });
-                            },
-                            style: TextStyle(fontSize: 18, color: Colors.blue),
-                            items: grades.map<DropdownMenuItem<int>>((int grade) {
-                              return DropdownMenuItem<int>(
-                                value: grade,
-                                child: Text(
-                                  gradeToChinese(grade), // 使用中文显示年级
-                                  style: const TextStyle(fontSize: 18, color: Colors.black),
-                                ),
-                              );
-                            }).toList(),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // 密码输入框
+                      Container(
+                        width: 200,
+                        child: TextField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: '密码',
+                            prefixIcon: Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            filled: true,
+                            fillColor: Colors.blue[50],
                           ),
                         ),
                       ),
 
                       const SizedBox(height: 30),
-                      // 开始练习按钮
+
+                      // 登录按钮
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          // 登录成功后跳转到主页面
+                          Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => MathPracticeScreen(grade: selectedGrade, errorPronePractice: errorPronePractice),  // 传递实例
-                            ),
+                            MaterialPageRoute(builder: (context) => GradeSelectionScreen()), // 跳转到主页面
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -141,81 +142,9 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.play_arrow, size: 28), // 添加图标
+                            Icon(Icons.login, size: 28), // 添加图标
                             SizedBox(width: 8),
-                            Text('开始练习', style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // 导入导出习题按钮
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ImportExportScreen()),
-                          );
-                        },
-                        icon: Icon(Icons.import_export),
-                        label: Text('导入/导出习题', style: TextStyle(fontSize: 20)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightGreen,
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          elevation: 5,
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // 限时练习按钮
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => TimedPracticeScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightGreen,
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          elevation: 5,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.timer, size: 28),
-                            SizedBox(width: 8),
-                            Text('限时在线练习', style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // 结果分析按钮
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ResultAnalysisScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightGreen,
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          elevation: 5,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.analytics, size: 28),
-                            SizedBox(width: 8),
-                            Text('练习结果分析', style: TextStyle(fontSize: 20)),
+                            Text('登录', style: TextStyle(fontSize: 20)),
                           ],
                         ),
                       ),
