@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.white, Colors.lightBlueAccent],
+                  colors: [Colors.white, Colors.white],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        "登录",
+                        "welcome!",
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
 
@@ -146,6 +146,19 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(width: 8),
                             Text('登录', style: TextStyle(fontSize: 20)),
                           ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // 注册按钮
+                      TextButton(
+                        onPressed: () {
+                          // 注册按钮暂时不实现任何功能
+                        },
+                        child: Text(
+                          '没有账户? 点击注册',
+                          style: TextStyle(fontSize: 16, color: Colors.blue),
                         ),
                       ),
                     ],
